@@ -54,6 +54,7 @@
 - **База данных**: PostgreSQL (или любая другая по выбору)
 - **Безопасность**: Spring Security (роль-ориентированная авторизация)
 - **Тестирование**: JUnit, Mockito
+- **Документация API**: Springdoc OpenAPI с Swagger UI (`/swagger-ui.html`) для документирования и тестирования REST API.
 
 ## Требования
 - **Java 17**
@@ -95,6 +96,9 @@ school_mate/
 4. Запустите приложение:
    mvn spring-boot:run
 
+5. Откройте Swagger UI для просмотра и тестирования API:
+    - URL: `http://localhost:8080/swagger-ui.html`
+   
 Приложение запускается на http://localhost:8080. 
 По умолчанию Liquibase и JPA отключены 
 (spring.liquibase.enabled=false, spring.jpa.hibernate.ddl-auto=none), 

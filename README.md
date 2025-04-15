@@ -52,6 +52,7 @@ School Mate is a template web application for private schools, educational cente
 - **Database**: PostgreSQL (or any other by choice)
 - **Security**: Spring Security (role-based authorization)
 - **Testing**: JUnit, Mockito
+- **API Documentation**: Springdoc OpenAPI with Swagger UI (`/swagger-ui.html`) for documenting and testing REST API endpoints.
 
 ## Prerequisites
 - **Java 17**
@@ -92,10 +93,15 @@ school_mate/
 4. Run the application:
    mvn spring-boot:run
 
+5. Access Swagger UI to explore and test API endpoints:
+    - URL: `http://localhost:8080/swagger-ui.html`
+
 The application starts on http://localhost:8080. 
 By default, Liquibase and JPA are disabled 
 (spring.liquibase.enabled=false, spring.jpa.hibernate.ddl-auto=none), 
 so no database is required.
+
+
 
 ## Setup with Docker
 
