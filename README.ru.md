@@ -98,6 +98,7 @@ school_mate/
 
 5. Откройте Swagger UI для просмотра и тестирования API:
     - URL: `http://localhost:8080/swagger-ui.html`
+    - OpenAPI JSON: `http://localhost:8080/api-docs`
    
 Приложение запускается на http://localhost:8080. 
 По умолчанию Liquibase и JPA отключены 

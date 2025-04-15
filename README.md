@@ -94,7 +94,8 @@ school_mate/
    mvn spring-boot:run
 
 5. Access Swagger UI to explore and test API endpoints:
-    - URL: `http://localhost:8080/swagger-ui.html`
+   - URL: `http://localhost:8080/swagger-ui.html`
+   - OpenAPI JSON: `http://localhost:8080/api-docs`
 
 The application starts on http://localhost:8080. 
 By default, Liquibase and JPA are disabled 
