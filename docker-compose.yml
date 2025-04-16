@@ -1,24 +1,24 @@
 # docker-compose.yml
 #version: '3.8'
 services:
-  app:
+  school_mate_app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/school_mate
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://school_mate_db:5432/school_mate
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_LIQUIBASE_ENABLED=false
       - SPRING_JPA_HIBERNATE_DDL_AUTO=none
     depends_on:
-      - db
+      - school_mate_db
     networks:
       - school-mate-network
 
-  db:
+  school_mate_db:
     image: postgres:16
     environment:
       - POSTGRES_DB=school_mate
