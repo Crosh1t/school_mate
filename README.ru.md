@@ -54,6 +54,8 @@
 - **База данных**: PostgreSQL (или любая другая по выбору)
 - **Безопасность**: Spring Security (роль-ориентированная авторизация)
 - **Тестирование**: JUnit, Mockito
+- **Управление зависимостями**: Версии зависимостей (например, Spring Boot, PostgreSQL, Lombok, Springdoc OpenAPI) 
+вынесены в секцию `<properties>` в `pom.xml` для удобного управления.
 - **Документация API**: Springdoc OpenAPI с Swagger UI (`/swagger-ui.html`) для документирования и тестирования REST API.
 
 ## Требования

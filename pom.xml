@@ -18,11 +18,11 @@
 		<java.version>17</java.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
+		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<spring-boot.version>3.4.4</spring-boot.version>
 		<postgresql.version>42.7.4</postgresql.version>
 		<lombok.version>1.18.34</lombok.version>
 		<springdoc.version>2.6.0</springdoc.version>
-		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 	</properties>
 
 	<dependencies>

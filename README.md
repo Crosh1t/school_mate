@@ -50,8 +50,10 @@ School Mate is a template web application for private schools, educational cente
 - **Backend**: Java, Spring Boot
 - **Frontend**: Thymeleaf (with Bootstrap)
 - **Database**: PostgreSQL (or any other by choice)
-- **Security**: Spring Security (role-based authorization)
+- **Security**: Spring Security (role-based authorization, currently disabled)
 - **Testing**: JUnit, Mockito
+- **Dependency Management**: Dependency versions (e.g., Spring Boot, PostgreSQL, Lombok, Springdoc OpenAPI) 
+are centralized in the `<properties>` section of `pom.xml` for easier maintenance.
 - **API Documentation**: Springdoc OpenAPI with Swagger UI (`/swagger-ui.html`) for documenting and testing REST API endpoints.
 
 ## Prerequisites
