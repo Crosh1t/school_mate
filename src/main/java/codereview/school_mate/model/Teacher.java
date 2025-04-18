@@ -29,7 +29,7 @@ public class Teacher {
             joinColumns = @JoinColumn(name = "teacher_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
-    private Set<Subject> subjects;
+    private Set<codereview.school_mate.model.Subject> subjects;
 
 
     @ManyToMany(mappedBy = "teachers")
