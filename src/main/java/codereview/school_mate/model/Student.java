@@ -1,6 +1,14 @@
 package codereview.school_mate.model;
-import jakarta.persistence.*;
-import lombok.Data;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta. persistence.GenerationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok. Data;
 
 @Entity
 @Data
@@ -13,8 +21,8 @@ public class Student {
     @Column(name = "surname", nullable = false)
     private String surname;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "patronymic", nullable = false)
+    private String patronymic;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
