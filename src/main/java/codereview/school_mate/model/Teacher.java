@@ -25,8 +25,8 @@ public class Teacher {
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+    @Column(name = "surname", nullable = false)
+    private String surname;
 
     @Column(name = "patronymic")
     private String patronymic;

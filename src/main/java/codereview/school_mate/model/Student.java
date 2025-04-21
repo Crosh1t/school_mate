@@ -18,16 +18,20 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
     @Column(name = "surname", nullable = false)
     private String surname;
 
     @Column(name = "patronymic", nullable = false)
     private String patronymic;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
     private SchoolClass schoolClass;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Parent parent;
 }
