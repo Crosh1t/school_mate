@@ -1,4 +1,4 @@
-package codereview.school_mate.service.imp;
+package codereview.school_mate.service.serviceImpl;
 
 import codereview.school_mate.dto.StudentRequestDto;
 import codereview.school_mate.dto.StudentResponseDto;

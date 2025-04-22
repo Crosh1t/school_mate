@@ -1,4 +1,4 @@
-package codereview.school_mate.service.imp;
+package codereview.school_mate.service.serviceImpl;
 
 import codereview.school_mate.dto.ParentRequestDto;
 import codereview.school_mate.dto.ParentResponseDto;
