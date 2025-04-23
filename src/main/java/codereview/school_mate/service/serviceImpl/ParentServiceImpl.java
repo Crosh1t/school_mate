@@ -18,7 +18,6 @@ public class ParentServiceImpl implements ParentService {
     private final ParentRepository parentRepository;
     private final ParentMapper parentMapper;
 
-    @Transactional
     @Override
     public ParentResponseDto create(ParentRequestDto dto) {
         Parent parent = parentMapper.toEntity(dto);
@@ -34,9 +33,7 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public List<ParentResponseDto> findAll() {
-        return parentRepository.findAll().stream()
-                .map(parentMapper::toDto)
-                .collect(Collectors.toList());
+        return parentMapper.toDtos(parentRepository.findAll());
     }
 
     @Override

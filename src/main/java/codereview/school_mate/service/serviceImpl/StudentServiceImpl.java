@@ -8,48 +8,45 @@ import codereview.school_mate.repository.StudentRepository;
 import codereview.school_mate.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class StudentServiceImpl implements StudentService {
+
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
     @Override
-    @Transactional
     public StudentResponseDto create(StudentRequestDto dto) {
         Student student = studentMapper.toEntity(dto);
-        Student saveStudent = studentRepository.save(student);
-        return studentMapper.toDto(saveStudent);
+        Student savedStudent = studentRepository.save(student);
+        return studentMapper.studentToStudentResponseDto(savedStudent);
     }
 
     @Override
     public StudentResponseDto findById(Long id) {
-        Student student = studentRepository.findById(id).orElseThrow(()-> new RuntimeException("Student not found with id: " + id));
-        return studentMapper.toDto(student);
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+        return studentMapper.studentToStudentResponseDto(student);
     }
 
     @Override
     public List<StudentResponseDto> findAll() {
-        return studentRepository.findAll().stream()
-                .map(studentMapper::toDto)
-                .collect(Collectors.toList());
+        return studentMapper.studentsToStudentResponseDtos(studentRepository.findAll());
     }
 
     @Override
-    @Transactional
     public StudentResponseDto update(Long id, StudentRequestDto dto) {
-        Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
-        studentMapper.updateEntityFromDto(dto, student);
-        return studentMapper.toDto(studentRepository.save(student));
+        Student existingStudent = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        studentMapper.updateEntityFromDto(dto, existingStudent);
+        Student updatedStudent = studentRepository.save(existingStudent);
+        return studentMapper.studentToStudentResponseDto(updatedStudent);
     }
 
     @Override
-    @Transactional
     public void delete(Long id) {
         studentRepository.deleteById(id);
     }

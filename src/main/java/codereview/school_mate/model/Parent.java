@@ -11,6 +11,7 @@ import jakarta.persistence.CascadeType;
 import lombok.Data;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Entity
 @Data
@@ -34,7 +35,7 @@ public class Parent {
     private String contacts;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Student> children = new ArrayList<>();
+    private Set<Student> children;
 
     public void addChild(Student child) {
         children.add(child);

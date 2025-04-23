@@ -33,12 +33,11 @@ public class Teacher {
 
     @ManyToMany
     @JoinTable(
-            name = "teacher_subject",
+            name = "teachers_subjects",
             joinColumns = @JoinColumn(name = "teacher_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id")
     )
     private Set<codereview.school_mate.model.Subject> subjects;
-//дай Бог правильно
 
     @ManyToMany(mappedBy = "teachers")
     private Set<SchoolClass> classes;

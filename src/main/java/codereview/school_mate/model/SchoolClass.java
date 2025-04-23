@@ -25,6 +25,9 @@ public class SchoolClass {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(name = "reversed_name", nullable = true)
+    private String reversedColumnName;
+
     @ManyToMany
     @JoinTable(
             name = "class_teacher",
@@ -32,4 +35,9 @@ public class SchoolClass {
             inverseJoinColumns = @JoinColumn(name = "teacher_id")
     )
     private Set<Teacher> teachers;
+
+    public void setName(String name) {
+        this.name = name;
+        this.reversedColumnName = new StringBuilder(name).reverse().toString();
+    }
 }
