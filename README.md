@@ -55,6 +55,8 @@ School Mate is a template web application for private schools, educational cente
 - **Dependency Management**: Dependency versions (e.g., Spring Boot, PostgreSQL, Lombok, Springdoc OpenAPI) 
 are centralized in the `<properties>` section of `pom.xml` for easier maintenance.
 - **API Documentation**: Springdoc OpenAPI with Swagger UI (`/swagger-ui.html`) for documenting and testing REST API endpoints.
+- **Logging**: HTTP request logging with `CommonsRequestLoggingFilter` (includes query string, payload, headers). 
+Logs are written to `logs/app.log` with a rolling policy (max 10MB per file, 30 days history).
 
 ## Prerequisites
 - **Java 17**
@@ -89,13 +91,16 @@ school_mate/
 2. Navigate to the project directory:
    cd school_mate
 
-3. Build the project:
+3. Create a logs directory for logging
+   mkdir logs
+
+4. Build the project:
    mvn clean install
 
-4. Run the application:
+5. Run the application:
    mvn spring-boot:run
 
-5. Access Swagger UI to explore and test API endpoints:
+6. Access Swagger UI to explore and test API endpoints:
    - URL: `http://localhost:8080/swagger-ui.html`
    - OpenAPI JSON: `http://localhost:8080/api-docs`
 
@@ -180,5 +185,9 @@ and HibernateJpaAutoConfiguration in application.yml
 - Maven issues: Run mvn clean install to resolve dependency problems.
 - Docker issues: Ensure Docker Desktop is running and try docker-compose up --build again.
 - Database errors: Verify application.yml settings and PostgreSQL availability.
+- Logging issues: Check `logs/app.log` for request logs. Ensure the `logs` directory exists. If logs are not written, verify `logging.file.name` in `application.yml`.
+- Error details: Detailed error messages and stacktraces are enabled (`server.error.include-*`). To view stacktraces, trigger an error (e.g., access a non-existent endpoint like `/non-existent`).
+
+For further assistance, contact the team or check the repository issues.
 
 For further assistance, contact the team or check the repository issues.
