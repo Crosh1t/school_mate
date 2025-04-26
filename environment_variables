@@ -1,0 +1,21 @@
+Инструкция по созданию переменных среды
+
+Переменные среды (пары ключ=значение):
+DB_URL=jdbc:postgresql://school_mate_db:5432/school_mate
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=school_mate
+
+Как добавить Environment Variables в Spring Boot приложение?
+1. В верхнем меню: Run → Edit Configurations
+2. Выберите конфигурацию: Spring Boot → SchoolMateApplication
+3. Затем нажмите на Modify Options и во всплывающем окне выберите Environment Variables (в блоке Operating systems)
+4. В появившемся поле нажмите на крайнюю правую кнопку (Edit Environment Variables)
+5. В появившемся окне необходимо добавить пары ключ=значение
+
+Как добавить Environment Variables в Docker?
+1. В верхнем меню: Run → Edit Configurations
+2. Выберите конфигурацию: Docker → docker-compose.yml: Compose Deployment
+3. Затем нажмите на Modify Options и во всплывающем окне выберите Environment Variables
+4. В появившемся поле нажмите на крайнюю правую кнопку (Edit Environment Variables)
+5. В появившемся окне необходимо добавить пары ключ=значение
