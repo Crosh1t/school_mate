@@ -9,6 +9,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
@@ -16,6 +18,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "parent")
+@EqualsAndHashCode(of = {"id"})
 public class Parent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

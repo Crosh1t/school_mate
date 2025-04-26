@@ -33,12 +33,19 @@ public class Teacher {
 
     @ManyToMany
     @JoinTable(
-            name = "teachers_subjects",
-            joinColumns = @JoinColumn(name = "teacher_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id")
+            name = "teachers_classes",
+            joinColumns = @JoinColumn(name = "teacher_id"),
+            inverseJoinColumns = @JoinColumn(name = "class_id")
     )
-    private Set<codereview.school_mate.model.Subject> subjects;
-
-    @ManyToMany(mappedBy = "teachers")
+    @EqualsAndHashCode.Exclude
     private Set<SchoolClass> classes;
+
+    @ManyToMany
+    @JoinTable(
+            name = "teachers_subjects",
+            joinColumns = @JoinColumn(name = "teacher_id"),
+            inverseJoinColumns = @JoinColumn(name = "subject_id")
+    )
+    @EqualsAndHashCode.Exclude
+    private Set<Subject> subjects;
 }

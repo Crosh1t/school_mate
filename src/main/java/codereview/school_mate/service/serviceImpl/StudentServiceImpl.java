@@ -21,6 +21,9 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponseDto create(StudentRequestDto dto) {
         Student student = studentMapper.toEntity(dto);
+        if (student == null) {
+            throw new RuntimeException("Failed to map StudentRequestDto to Student entity");
+        }
         Student savedStudent = studentRepository.save(student);
         return studentMapper.studentToStudentResponseDto(savedStudent);
     }

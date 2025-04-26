@@ -7,8 +7,7 @@ import jakarta.persistence.Table;
 import jakarta. persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
+
 import java.util.Set;
 import lombok. Data;
 import lombok. EqualsAndHashCode;
@@ -25,15 +24,11 @@ public class SchoolClass {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(name = "reversed_name", nullable = true)
+    @Column(name = "reversed_name")
     private String reversedColumnName;
 
-    @ManyToMany
-    @JoinTable(
-            name = "class_teacher",
-            joinColumns = @JoinColumn(name = "class_id"),
-            inverseJoinColumns = @JoinColumn(name = "teacher_id")
-    )
+    @ManyToMany(mappedBy = "classes") // Указываем на поле в Teacher
+    @EqualsAndHashCode.Exclude
     private Set<Teacher> teachers;
 
     public void setName(String name) {
