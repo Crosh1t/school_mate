@@ -3,84 +3,102 @@ package codereview.school_mate.serviceImpl;
 import codereview.school_mate.dto.TeacherRequestDto;
 import codereview.school_mate.dto.TeacherResponseDto;
 import codereview.school_mate.mapper.TeacherMapper;
+import codereview.school_mate.model.Subject;
 import codereview.school_mate.model.Teacher;
+import codereview.school_mate.repository.SchoolClassRepository;
+import codereview.school_mate.repository.SubjectRepository;
 import codereview.school_mate.repository.TeacherRepository;
 import codereview.school_mate.service.serviceImpl.TeacherServiceImpl;
+import org.hibernate.exception.ConstraintViolationException;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+
+@SpringBootTest
+@Testcontainers
 class TeacherServiceTest {
 
+    @Autowired
     private TeacherRepository teacherRepository;
+    @Autowired
+    private SchoolClassRepository schoolClassRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
+    @Autowired
     private TeacherMapper teacherMapper;
+    @Autowired
     private TeacherServiceImpl teacherService;
+
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @BeforeEach
     void setUp() {
-        teacherRepository = mock(TeacherRepository.class);
-        teacherMapper = mock(TeacherMapper.class);
-        teacherService = new TeacherServiceImpl(teacherRepository, teacherMapper);
+        teacherRepository.deleteAll();
+        schoolClassRepository.deleteAll();
+        subjectRepository.deleteAll();
+        counter.set(1);
+    }
+    @AfterAll
+     static void tearDown() {
+        postgres.stop();
     }
 
     @Test
-    void create_ValidRequest_ReturnsTeacherResponseDto() {
-        TeacherRequestDto requestDto = new TeacherRequestDto();
-        Teacher teacher = new Teacher();
-        Teacher savedTeacher = new Teacher();
-        TeacherResponseDto responseDto = new TeacherResponseDto();
+    void create_ShouldSuccessfullyCreateTeacher() {
+        TeacherRequestDto request = new TeacherRequestDto();
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setPatronymic("Smith");
 
-        when(teacherMapper.toEntity(requestDto)).thenReturn(teacher);
-        when(teacherRepository.save(teacher)).thenReturn(savedTeacher);
-        when(teacherMapper.toDto(savedTeacher)).thenReturn(responseDto);
+        TeacherResponseDto result = teacherService.create(request);
 
-        TeacherResponseDto result = teacherService.create(requestDto);
-
-        assertEquals(responseDto, result);
-        verify(teacherRepository).save(teacher);
+        assertNotNull(result.getId());
+        assertEquals("John", result.getFirstName());
+        assertEquals("Doe", result.getLastName());
+        assertEquals("Smith", result.getPatronymic());
     }
 
     @Test
-    void findById_ExistingId_ReturnsTeacherResponseDto() {
-        Long id = 1L;
-        Teacher teacher = new Teacher();
-        TeacherResponseDto responseDto = new TeacherResponseDto();
+    void findById_ShouldReturnExistingTeacher() {
+        Teacher teacher = createTestTeacher();
 
-        when(teacherRepository.findById(id)).thenReturn(Optional.of(teacher));
-        when(teacherMapper.toDto(teacher)).thenReturn(responseDto);
+        TeacherResponseDto result = teacherService.findById(teacher.getId());
 
-        TeacherResponseDto result = teacherService.findById(id);
-
-        assertEquals(responseDto, result);
+        assertNotNull(result);
+        assertEquals(teacher.getId(), result.getId());
+        assertEquals(teacher.getFirstName(), result.getFirstName());
+        assertEquals(teacher.getSurname(), result.getLastName());
     }
 
     @Test
-    void findById_NonExistingId_ThrowsRuntimeException() {
-        Long id = 1L;
-
-        when(teacherRepository.findById(id)).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> teacherService.findById(id));
-        assertEquals("Teacher not found", exception.getMessage());
-    }
-
-    @Test
-    void findAll_TeachersExist_ReturnsListOfTeacherResponseDto() {
-        List<Teacher> teachers = List.of(new Teacher(), new Teacher());
-        List<TeacherResponseDto> responseDtos = List.of(new TeacherResponseDto(), new TeacherResponseDto());
-
-        when(teacherRepository.findAll()).thenReturn(teachers);
-        when(teacherMapper.toDto(teachers.get(0))).thenReturn(responseDtos.get(0));
-        when(teacherMapper.toDto(teachers.get(1))).thenReturn(responseDtos.get(1));
+    void findAll_ShouldReturnAllTeachers() {
+        createTestTeacher();
+        createTestTeacher();
 
         List<TeacherResponseDto> result = teacherService.findAll();
 
@@ -88,56 +106,130 @@ class TeacherServiceTest {
     }
 
     @Test
-    void findAll_NoTeachers_ReturnsEmptyList() {
-        when(teacherRepository.findAll()).thenReturn(List.of());
+    void update_ShouldUpdateTeacherData() {
+        Teacher teacher = createTestTeacher();
 
-        List<TeacherResponseDto> result = teacherService.findAll();
+        TeacherRequestDto updateRequest = new TeacherRequestDto();
+        updateRequest.setFirstName("Updated");
+        updateRequest.setLastName("Name");
+        updateRequest.setPatronymic("Patronymic");
 
-        assertTrue(result.isEmpty());
+        TeacherResponseDto result = teacherService.update(teacher.getId(), updateRequest);
+
+        assertEquals("Updated", result.getFirstName());
+        assertEquals("Name", result.getLastName());
+        assertEquals("Patronymic", result.getPatronymic());
     }
 
     @Test
-    void update_ExistingIdAndValidRequest_ReturnsUpdatedTeacherResponseDto() {
-        Long id = 1L;
-        TeacherRequestDto requestDto = new TeacherRequestDto();
+    void delete_ShouldRemoveTeacher() {
+        Teacher teacher = createTestTeacher();
+
+        teacherService.delete(teacher.getId());
+
+        assertFalse(teacherRepository.existsById(teacher.getId()));
+    }
+
+    @Test
+    void findById_ShouldThrowExceptionWhenTeacherNotFound() {
+        Long nonExistentId = 999L;
+
+        assertThrows(RuntimeException.class, () -> teacherService.findById(nonExistentId));
+    }
+
+    @Test
+    void update_ShouldThrowExceptionWhenTeacherNotFound() {
+        Long nonExistentId = 999L;
+        TeacherRequestDto updateRequest = new TeacherRequestDto();
+        updateRequest.setFirstName("Nonexistent");
+
+        assertThrows(RuntimeException.class, () -> teacherService.update(nonExistentId, updateRequest));
+    }
+
+    @Test
+    void delete_ShouldNotThrowExceptionWhenTeacherNotFound() {
+        Long nonExistentId = 999L;
+
+        assertDoesNotThrow(() -> teacherService.delete(nonExistentId));
+    }
+
+    @Test
+    void create_ShouldThrowExceptionWhenFirstNameIsBlank() {
+        TeacherRequestDto request = new TeacherRequestDto();
+        request.setFirstName(null);
+        request.setLastName("Doe");
+
+        assertThrows(Exception.class, () -> teacherService.create(request));
+    }
+
+    @Test
+    void create_ShouldThrowExceptionWhenLastNameIsBlank() {
+        TeacherRequestDto request = new TeacherRequestDto();
+        request.setFirstName("John");
+        request.setLastName(null);
+
+        assertThrows(Exception.class, () -> teacherService.create(request));
+    }
+
+    @Test
+    void update_ShouldHandlePartialUpdate() {
+        Teacher teacher = createTestTeacher();
+        String originalLastName = teacher.getSurname();
+        String originalPatronymic = teacher.getPatronymic();
+
+        TeacherRequestDto updateRequest = new TeacherRequestDto();
+        updateRequest.setFirstName("UpdatedOnly");
+
+        TeacherResponseDto result = teacherService.update(teacher.getId(), updateRequest);
+
+        assertEquals("UpdatedOnly", result.getFirstName());
+        assertEquals(originalLastName, result.getLastName());
+        assertEquals(originalPatronymic, result.getPatronymic());
+    }
+
+    @Test
+    void addSubjectToTeacher_ShouldAddSubject() {
+        Teacher teacher = createTestTeacher();
+        Subject subject = createTestSubject();
+
+        TeacherResponseDto result = teacherService.addSubjectToTeacher(teacher.getId(), subject.getId());
+
+        assertNotNull(result.getSubjects());
+        assertEquals(1, result.getSubjects().size());
+        assertEquals(subject.getId(), result.getSubjects().iterator().next().getId());
+    }
+
+    @Test
+    void addSubjectToTeacher_ShouldThrowWhenTeacherNotFound() {
+        Long nonExistentTeacherId = 999L;
+        Subject subject = createTestSubject();
+
+        assertThrows(RuntimeException.class, () ->
+                teacherService.addSubjectToTeacher(nonExistentTeacherId, subject.getId()));
+    }
+
+    @Test
+    void addSubjectToTeacher_ShouldThrowWhenSubjectNotFound() {
+        Teacher teacher = createTestTeacher();
+        Long nonExistentSubjectId = 999L;
+
+        assertThrows(RuntimeException.class, () ->
+                teacherService.addSubjectToTeacher(teacher.getId(), nonExistentSubjectId));
+    }
+
+    private AtomicLong counter = new AtomicLong(1);
+
+    private Teacher createTestTeacher() {
         Teacher teacher = new Teacher();
-        TeacherResponseDto responseDto = new TeacherResponseDto();
-
-        when(teacherRepository.findById(id)).thenReturn(Optional.of(teacher));
-        when(teacherRepository.save(teacher)).thenReturn(teacher);
-        when(teacherMapper.toDto(teacher)).thenReturn(responseDto);
-
-        TeacherResponseDto result = teacherService.update(id, requestDto);
-
-        assertEquals(responseDto, result);
-        verify(teacherMapper).updateEntityFromDto(requestDto, teacher);
+        teacher.setFirstName("Teacher_" + counter.getAndIncrement());
+        teacher.setSurname("Lastname_" + counter.getAndIncrement());
+        teacher.setPatronymic("Midname_" + counter.getAndIncrement());
+        return teacherRepository.save(teacher);
     }
 
-    @Test
-    void update_NonExistingId_ThrowsRuntimeException() {
-        Long id = 1L;
-        TeacherRequestDto requestDto = new TeacherRequestDto();
-
-        when(teacherRepository.findById(id)).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> teacherService.update(id, requestDto));
-        assertEquals("Teacher not found", exception.getMessage());
-    }
-
-    @Test
-    void delete_ExistingId_DeletesTeacher() {
-        Long id = 1L;
-
-        teacherService.delete(id);
-
-        verify(teacherRepository).deleteById(id);
-    }
-
-    @Test
-    void addSubjectToTeacher_NotImplemented_ThrowsUnsupportedOperationException() {
-        Long teacherId = 1L;
-        Long subjectId = 2L;
-
-        assertThrows(UnsupportedOperationException.class, () -> teacherService.addSubjectToTeacher(teacherId, subjectId));
+    private Subject createTestSubject() {
+        Subject subject = new Subject();
+        subject.setName("Subject_" + counter.getAndIncrement());
+        return subjectRepository.save(subject);
     }
 }

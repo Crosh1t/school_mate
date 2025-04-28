@@ -11,8 +11,6 @@ import jakarta.persistence.CascadeType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Set;
 
 @Entity
@@ -39,11 +37,4 @@ public class Parent {
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Student> children;
-
-    public void addChild(Student child) {
-        children.add(child);
-        child.setParent(this);
-    }
-
-
 }

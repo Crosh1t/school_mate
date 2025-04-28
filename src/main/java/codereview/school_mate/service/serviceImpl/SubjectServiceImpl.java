@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +34,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public List<SubjectResponseDto> findAll() {
-        return subjectRepository.findAll().stream()
-                .map(subjectMapper::toDto)
-                .collect(Collectors.toList());
+        return subjectMapper.subjectsToSubjectResponseDtos(subjectRepository.findAll());
     }
 
     @Override

@@ -4,6 +4,11 @@ import codereview.school_mate.dto.TeacherRequestDto;
 import codereview.school_mate.dto.TeacherResponseDto;
 import codereview.school_mate.service.TeacherService;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,37 +24,71 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/teachers")
 @RequiredArgsConstructor
+@Tag(name = "Учителя", description = "Управление данными учителей")
 public class TeacherController {
     private final TeacherService teacherService;
 
+    @Operation(summary = "Создать нового учителя", description = "Создает запись о новом учителе")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Учитель успешно создан"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные")
+    })
     @PostMapping
     public ResponseEntity<TeacherResponseDto> create(@RequestBody TeacherRequestDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.create(dto));
     }
 
+    @Operation(summary = "Получить учителя по ID", description = "Возвращает данные учителя по его идентификатору")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Учитель найден"),
+            @ApiResponse(responseCode = "404", description = "Учитель не найден")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<TeacherResponseDto> findById(@PathVariable Long id) {
+    public ResponseEntity<TeacherResponseDto> findById(
+            @Parameter(description = "ID учителя", required = true) @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(teacherService.findById(id));
     }
 
+    @Operation(summary = "Получить всех учителей", description = "Возвращает список всех учителей")
+    @ApiResponse(responseCode = "200", description = "Список учителей успешно получен")
     @GetMapping
     public ResponseEntity<List<TeacherResponseDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(teacherService.findAll());
     }
 
+    @Operation(summary = "Обновить данные учителя", description = "Обновляет информацию об учителе по его ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Данные успешно обновлены"),
+            @ApiResponse(responseCode = "404", description = "Учитель не найден")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<TeacherResponseDto> update(@PathVariable Long id, @RequestBody TeacherRequestDto dto) {
+    public ResponseEntity<TeacherResponseDto> update(
+            @Parameter(description = "ID учителя", required = true) @PathVariable Long id,
+            @RequestBody TeacherRequestDto dto) {
         return ResponseEntity.status(HttpStatus.OK).body(teacherService.update(id, dto));
     }
 
+    @Operation(summary = "Удалить учителя", description = "Удаляет запись об учителе по его ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Учитель успешно удален"),
+            @ApiResponse(responseCode = "404", description = "Учитель не найден")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID учителя", required = true) @PathVariable Long id) {
         teacherService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(summary = "Добавить предмет учителю", description = "Связывает предмет с учителем")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Предмет успешно добавлен"),
+            @ApiResponse(responseCode = "404", description = "Учитель или предмет не найден")
+    })
     @PostMapping("/{teacherId}/subjects/{subjectId}")
-    public ResponseEntity<TeacherResponseDto> addSubject(@PathVariable Long teacherId, @PathVariable Long subjectId) {
+    public ResponseEntity<TeacherResponseDto> addSubject(
+            @Parameter(description = "ID учителя", required = true) @PathVariable Long teacherId,
+            @Parameter(description = "ID предмета", required = true) @PathVariable Long subjectId) {
         return ResponseEntity.status(HttpStatus.OK).body(teacherService.addSubjectToTeacher(teacherId, subjectId));
     }
 }

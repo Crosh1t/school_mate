@@ -3,6 +3,11 @@ package codereview.school_mate.controller;
 import codereview.school_mate.dto.ParentRequestDto;
 import codereview.school_mate.dto.ParentResponseDto;
 import codereview.school_mate.service.ParentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,31 +24,58 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/parents")
 @RequiredArgsConstructor
+@Tag(name = "Родители", description = "Управление данными родителей")
 public class ParentController {
     private final ParentService parentService;
 
+    @Operation(summary = "Создать нового родителя", description = "Создает запись о новом родителе")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Родитель успешно создан"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные")
+    })
     @PostMapping
     public ResponseEntity<ParentResponseDto> create(@RequestBody ParentRequestDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(parentService.create(dto));
     }
 
+    @Operation(summary = "Получить родителя по ID", description = "Возвращает данные родителя по его идентификатору")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Родитель найден"),
+            @ApiResponse(responseCode = "404", description = "Родитель не найден")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<ParentResponseDto> findById(@PathVariable Long id) {
+    public ResponseEntity<ParentResponseDto> findById(
+            @Parameter(description = "ID родителя", required = true) @PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(parentService.findById(id));
     }
 
+    @Operation(summary = "Получить всех родителей", description = "Возвращает список всех родителей")
+    @ApiResponse(responseCode = "200", description = "Список родителей успешно получен")
     @GetMapping
     public ResponseEntity<List<ParentResponseDto>> findAll() {
         return ResponseEntity.status(HttpStatus.OK).body(parentService.findAll());
     }
 
+    @Operation(summary = "Обновить данные родителя", description = "Обновляет информацию о родителе по его ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Данные успешно обновлены"),
+            @ApiResponse(responseCode = "404", description = "Родитель не найден")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<ParentResponseDto> update(@PathVariable Long id, @RequestBody ParentRequestDto dto) {
+    public ResponseEntity<ParentResponseDto> update(
+            @Parameter(description = "ID родителя", required = true) @PathVariable Long id,
+            @RequestBody ParentRequestDto dto) {
         return ResponseEntity.status(HttpStatus.OK).body(parentService.update(id, dto));
     }
 
+    @Operation(summary = "Удалить родителя", description = "Удаляет запись о родителе по его ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Родитель успешно удален"),
+            @ApiResponse(responseCode = "404", description = "Родитель не найден")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID родителя", required = true) @PathVariable Long id) {
         parentService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

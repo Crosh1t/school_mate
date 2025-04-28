@@ -1,135 +1,159 @@
 package codereview.school_mate.serviceImpl;
 
-import codereview.school_mate.dto.SubjectRequestDto;
-import codereview.school_mate.dto.SubjectResponseDto;
-import codereview.school_mate.mapper.SubjectMapper;
-import codereview.school_mate.model.Subject;
-import codereview.school_mate.repository.SubjectRepository;
-import codereview.school_mate.service.serviceImpl.SubjectServiceImpl;
+import codereview.school_mate.dto.StudentRequestDto;
+import codereview.school_mate.dto.StudentResponseDto;
+import codereview.school_mate.mapper.StudentMapper;
+import codereview.school_mate.model.Parent;
+import codereview.school_mate.model.SchoolClass;
+import codereview.school_mate.model.Student;
+import codereview.school_mate.repository.ParentRepository;
+import codereview.school_mate.repository.SchoolClassRepository;
+import codereview.school_mate.repository.StudentRepository;
+import codereview.school_mate.service.serviceImpl.StudentServiceImpl;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 
-class SubjectServiceTest {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-    private SubjectRepository subjectRepository;
-    private SubjectMapper subjectMapper;
-    private SubjectServiceImpl subjectService;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+
+@SpringBootTest
+@Testcontainers
+class StudentServiceImplTest {
+
+    @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
+    private ParentRepository parentRepository;
+    @Autowired
+    private SchoolClassRepository schoolClassRepository;
+    @Autowired
+    private StudentMapper studentMapper;
+    @Autowired
+    private StudentServiceImpl studentService;
+
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
     @BeforeEach
     void setUp() {
-        subjectRepository = mock(SubjectRepository.class);
-        subjectMapper = mock(SubjectMapper.class);
-        subjectService = new SubjectServiceImpl(subjectRepository, subjectMapper);
+        studentRepository.deleteAll();
+        parentRepository.deleteAll();
+        schoolClassRepository.deleteAll();
+    }
+    @AfterAll
+    static void tearDown() {
+        postgres.stop();
     }
 
     @Test
-    void create_ValidRequest_ReturnsSubjectResponseDto() {
-        SubjectRequestDto requestDto = new SubjectRequestDto();
-        Subject subject = new Subject();
-        Subject savedSubject = new Subject();
-        SubjectResponseDto responseDto = new SubjectResponseDto();
+    void create_ShouldPersistStudentWithAllRequiredFields() {
+        Parent parent = parentRepository.save(createValidParent());
+        SchoolClass schoolClass = schoolClassRepository.save(createValidSchoolClass());
 
-        when(subjectMapper.toEntity(requestDto)).thenReturn(subject);
-        when(subjectRepository.save(subject)).thenReturn(savedSubject);
-        when(subjectMapper.toDto(savedSubject)).thenReturn(responseDto);
+        StudentRequestDto request = new StudentRequestDto();
+        request.setFirstName("Alice");
+        request.setSurname("Johnson");
+        request.setPatronymic("Marie");
+        request.setParentId(parent.getId());
+        request.setSchoolClassId(schoolClass.getId());
 
-        SubjectResponseDto result = subjectService.create(requestDto);
+        StudentResponseDto result = studentService.create(request);
 
-        assertEquals(responseDto, result);
-        verify(subjectRepository).save(subject);
+        assertNotNull(result.getId());
+        assertEquals(1, studentRepository.count());
+
+        Student saved = studentRepository.findById(result.getId()).orElseThrow();
+        assertEquals("Alice", saved.getFirstName());
+        assertEquals(parent.getId(), saved.getParent().getId());
+        assertEquals(schoolClass.getId(), saved.getSchoolClass().getId());
     }
 
     @Test
-    void findById_ExistingId_ReturnsSubjectResponseDto() {
-        Long id = 1L;
-        Subject subject = new Subject();
-        SubjectResponseDto responseDto = new SubjectResponseDto();
+    void findById_ShouldReturnStudentWithAllFields() {
+        Parent parent = parentRepository.save(createValidParent());
+        SchoolClass schoolClass = schoolClassRepository.save(createValidSchoolClass());
+        Student student = studentRepository.save(createValidStudent(parent, schoolClass));
 
-        when(subjectRepository.findById(id)).thenReturn(Optional.of(subject));
-        when(subjectMapper.toDto(subject)).thenReturn(responseDto);
+        StudentResponseDto result = studentService.findById(student.getId());
 
-        SubjectResponseDto result = subjectService.findById(id);
-
-        assertEquals(responseDto, result);
+        assertEquals(student.getId(), result.getId());
+        assertEquals("Alice", result.getFirstName());
+        assertEquals("Johnson", result.getSurname());
+        assertEquals("Marie", result.getPatronymic());
     }
 
     @Test
-    void findById_NonExistingId_ThrowsRuntimeException() {
-        Long id = 1L;
+    void update_ShouldModifyStudentData() {
+        Parent parent = parentRepository.save(createValidParent());
+        SchoolClass schoolClass = schoolClassRepository.save(createValidSchoolClass());
+        Student student = studentRepository.save(createValidStudent(parent, schoolClass));
 
-        when(subjectRepository.findById(id)).thenReturn(Optional.empty());
+        StudentRequestDto updateRequest = new StudentRequestDto();
+        updateRequest.setFirstName("Updated");
+        updateRequest.setSurname("Name");
+        updateRequest.setPatronymic("Patronymic");
+        updateRequest.setParentId(parent.getId());
+        updateRequest.setSchoolClassId(schoolClass.getId());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> subjectService.findById(id));
-        assertEquals("Subject not found", exception.getMessage());
+        studentService.update(student.getId(), updateRequest);
+
+        Student updated = studentRepository.findById(student.getId()).orElseThrow();
+        assertEquals("Updated", updated.getFirstName());
+        assertEquals("Name", updated.getSurname());
+        assertEquals("Patronymic", updated.getPatronymic());
     }
 
     @Test
-    void findAll_SubjectsExist_ReturnsListOfSubjectResponseDto() {
-        List<Subject> subjects = List.of(new Subject(), new Subject());
-        List<SubjectResponseDto> responseDtos = List.of(new SubjectResponseDto(), new SubjectResponseDto());
+    void delete_ShouldRemoveStudentFromDB() {
+        Parent parent = parentRepository.save(createValidParent());
+        SchoolClass schoolClass = schoolClassRepository.save(createValidSchoolClass());
+        Student student = studentRepository.save(createValidStudent(parent, schoolClass));
 
-        when(subjectRepository.findAll()).thenReturn(subjects);
-        when(subjectMapper.toDto(subjects.get(0))).thenReturn(responseDtos.get(0));
-        when(subjectMapper.toDto(subjects.get(1))).thenReturn(responseDtos.get(1));
+        studentService.delete(student.getId());
 
-        List<SubjectResponseDto> result = subjectService.findAll();
-
-        assertEquals(2, result.size());
+        assertFalse(studentRepository.existsById(student.getId()));
+    }
+    private Parent createValidParent() {
+        Parent parent = new Parent();
+        parent.setFirstName("John");
+        parent.setSurname("Doe");
+        parent.setPatronymic("Smith");
+        parent.setContacts("john@example.com");
+        return parent;
     }
 
-    @Test
-    void findAll_NoSubjects_ReturnsEmptyList() {
-        when(subjectRepository.findAll()).thenReturn(List.of());
-
-        List<SubjectResponseDto> result = subjectService.findAll();
-
-        assertTrue(result.isEmpty());
+    private SchoolClass createValidSchoolClass() {
+        SchoolClass schoolClass = new SchoolClass();
+        schoolClass.setName("1-A");
+        return schoolClass;
     }
 
-    @Test
-    void update_ExistingIdAndValidRequest_ReturnsUpdatedSubjectResponseDto() {
-        Long id = 1L;
-        SubjectRequestDto requestDto = new SubjectRequestDto();
-        Subject subject = new Subject();
-        SubjectResponseDto responseDto = new SubjectResponseDto();
-
-        when(subjectRepository.findById(id)).thenReturn(Optional.of(subject));
-        when(subjectRepository.save(subject)).thenReturn(subject);
-        when(subjectMapper.toDto(subject)).thenReturn(responseDto);
-
-        SubjectResponseDto result = subjectService.update(id, requestDto);
-
-        assertEquals(responseDto, result);
-        verify(subjectMapper).updateEntityFromDto(requestDto, subject);
+    private Student createValidStudent(Parent parent, SchoolClass schoolClass) {
+        Student student = new Student();
+        student.setFirstName("Alice");
+        student.setSurname("Johnson");
+        student.setPatronymic("Marie");
+        student.setParent(parent);
+        student.setSchoolClass(schoolClass);
+        return student;
     }
 
-    @Test
-    void update_NonExistingId_ThrowsRuntimeException() {
-        Long id = 1L;
-        SubjectRequestDto requestDto = new SubjectRequestDto();
-
-        when(subjectRepository.findById(id)).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> subjectService.update(id, requestDto));
-        assertEquals("Subject not found", exception.getMessage());
-    }
-
-    @Test
-    void delete_ExistingId_DeletesSubject() {
-        Long id = 1L;
-
-        subjectService.delete(id);
-
-        verify(subjectRepository).deleteById(id);
-    }
 }

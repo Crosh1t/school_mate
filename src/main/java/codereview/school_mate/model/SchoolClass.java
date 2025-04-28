@@ -15,24 +15,18 @@ import lombok. EqualsAndHashCode;
 @Entity
 @Data
 @Table(name = "school_classes")
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class SchoolClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(name = "reversed_name")
-    private String reversedColumnName;
-
-    @ManyToMany(mappedBy = "classes") // Указываем на поле в Teacher
+    @ManyToMany(mappedBy = "classes")
     @EqualsAndHashCode.Exclude
     private Set<Teacher> teachers;
 
-    public void setName(String name) {
-        this.name = name;
-        this.reversedColumnName = new StringBuilder(name).reverse().toString();
-    }
 }

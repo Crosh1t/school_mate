@@ -5,7 +5,6 @@ import codereview.school_mate.dto.SubjectResponseDto;
 import codereview.school_mate.service.SubjectService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,8 +19,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.hamcrest.Matchers.hasSize;
 
 @WebMvcTest(SubjectController.class)
 class SubjectControllerTest {
@@ -36,64 +40,68 @@ class SubjectControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void create_ValidRequest_ReturnsCreatedSubject() throws Exception {
-        SubjectRequestDto requestDto = new SubjectRequestDto();
-        SubjectResponseDto responseDto = new SubjectResponseDto();
+    void create_ShouldReturnCreatedSubject() throws Exception {
+        SubjectResponseDto responseDto = new SubjectResponseDto(1L, "Mathematics");
 
-        Mockito.when(subjectService.create(any())).thenReturn(responseDto);
+        when(subjectService.create(any(SubjectRequestDto.class))).thenReturn(responseDto);
 
-        mockMvc.perform(post("/subjects")
+        mockMvc.perform(post("/api/subjects")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)));
+                        .content(objectMapper.writeValueAsString(
+                                new SubjectRequestDto("Mathematics")
+                        )))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Mathematics"));
     }
 
     @Test
-    void findById_ExistingId_ReturnsSubject() throws Exception {
-        SubjectResponseDto responseDto = new SubjectResponseDto();
-        Long id = 1L;
+    void findById_ShouldReturnSubject() throws Exception {
+        SubjectResponseDto responseDto = new SubjectResponseDto(1L, "Physics");
 
-        Mockito.when(subjectService.findById(id)).thenReturn(responseDto);
+        when(subjectService.findById(1L)).thenReturn(responseDto);
 
-        mockMvc.perform(get("/subjects/{id}", id))
+        mockMvc.perform(get("/api/subjects/{id}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)));
+                .andExpect(jsonPath("$.name").value("Physics"));
     }
 
     @Test
-    void findAll_ReturnsListOfSubjects() throws Exception {
-        List<SubjectResponseDto> responseDtos = List.of(new SubjectResponseDto(), new SubjectResponseDto());
+    void findAll_ShouldReturnSubjectsList() throws Exception {
+        List<SubjectResponseDto> subjects = List.of(
+                new SubjectResponseDto(1L, "Math"),
+                new SubjectResponseDto(2L, "Physics")
+        );
 
-        Mockito.when(subjectService.findAll()).thenReturn(responseDtos);
+        when(subjectService.findAll()).thenReturn(subjects);
 
-        mockMvc.perform(get("/subjects"))
+        mockMvc.perform(get("/api/subjects"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDtos)));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[1].name").value("Physics"));
     }
 
     @Test
-    void update_ExistingId_ReturnsUpdatedSubject() throws Exception {
-        SubjectRequestDto requestDto = new SubjectRequestDto();
-        SubjectResponseDto responseDto = new SubjectResponseDto();
-        Long id = 1L;
+    void update_ShouldReturnUpdatedSubject() throws Exception {
+        SubjectResponseDto responseDto = new SubjectResponseDto(1L, "Updated Math");
 
-        Mockito.when(subjectService.update(eq(id), any())).thenReturn(responseDto);
+        when(subjectService.update(eq(1L), any(SubjectRequestDto.class))).thenReturn(responseDto);
 
-        mockMvc.perform(put("/subjects/{id}", id)
+        mockMvc.perform(put("/api/subjects/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
+                        .content(objectMapper.writeValueAsString(
+                                new SubjectRequestDto("Math")
+                        )))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)));
+                .andExpect(jsonPath("$.name").value("Updated Math"));
     }
 
     @Test
-    void delete_ExistingId_DeletesSubject() throws Exception {
-        Long id = 1L;
+    void delete_ShouldReturnNoContent() throws Exception {
+        doNothing().when(subjectService).delete(1L);
 
-        mockMvc.perform(delete("/subjects/{id}", id))
-                .andExpect(status().isOk());
+        mockMvc.perform(delete("/api/subjects/{id}", 1L))
+                .andExpect(status().isNoContent());
 
-        Mockito.verify(subjectService).delete(id);
+        verify(subjectService, times(1)).delete(1L);
     }
 }

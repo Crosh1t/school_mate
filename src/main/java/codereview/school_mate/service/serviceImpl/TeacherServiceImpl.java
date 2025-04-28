@@ -3,7 +3,9 @@ package codereview.school_mate.service.serviceImpl;
 import codereview.school_mate.dto.TeacherRequestDto;
 import codereview.school_mate.dto.TeacherResponseDto;
 import codereview.school_mate.mapper.TeacherMapper;
+import codereview.school_mate.model.Subject;
 import codereview.school_mate.model.Teacher;
+import codereview.school_mate.repository.SubjectRepository;
 import codereview.school_mate.repository.TeacherRepository;
 import codereview.school_mate.service.TeacherService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 public class TeacherServiceImpl implements TeacherService {
     private final TeacherRepository teacherRepository;
     private final TeacherMapper teacherMapper;
+    private final SubjectRepository subjectRepository;
+
 
     @Override
     @Transactional
@@ -28,15 +32,13 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public TeacherResponseDto findById(Long id) {
         Teacher teacher = teacherRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));//коментарий полнее с данными по id
         return teacherMapper.toDto(teacher);
     }
 
     @Override
     public List<TeacherResponseDto> findAll() {
-        return teacherRepository.findAll().stream()
-                .map(teacherMapper::toDto)
-                .collect(Collectors.toList());
+        return teacherMapper.teachersToTeacherResponseDtos(teacherRepository.findAll());
     }
 
     @Override
@@ -57,6 +59,13 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     @Transactional
     public TeacherResponseDto addSubjectToTeacher(Long teacherId, Long subjectId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new RuntimeException("Subject not found"));
+
+        teacher.getSubjects().add(subject);
+        Teacher savedTeacher = teacherRepository.save(teacher);
+        return teacherMapper.toDto(savedTeacher);
     }
 }

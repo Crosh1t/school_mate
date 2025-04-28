@@ -11,7 +11,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://school_mate_db:5432/school_mate
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-#      - SPRING_LIQUIBASE_ENABLED=false
+      - SPRING_LIQUIBASE_ENABLED=false
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
     depends_on:
       - school_mate_db
