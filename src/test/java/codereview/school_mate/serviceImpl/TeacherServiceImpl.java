@@ -71,14 +71,14 @@ class TeacherServiceTest {
     @Test
     void create_ShouldSuccessfullyCreateTeacher() {
         TeacherRequestDto request = new TeacherRequestDto();
-        request.setFirstName("John");
+        request.setName("John");
         request.setLastName("Doe");
         request.setPatronymic("Smith");
 
-        TeacherResponseDto result = teacherService.create(request);
+        TeacherResponseDto result = teacherService.createTeacher(request);
 
         assertNotNull(result.getId());
-        assertEquals("John", result.getFirstName());
+        assertEquals("John", result.getName());
         assertEquals("Doe", result.getLastName());
         assertEquals("Smith", result.getPatronymic());
     }
@@ -87,11 +87,11 @@ class TeacherServiceTest {
     void findById_ShouldReturnExistingTeacher() {
         Teacher teacher = createTestTeacher();
 
-        TeacherResponseDto result = teacherService.findById(teacher.getId());
+        TeacherResponseDto result = teacherService.findByIdTeacher(teacher.getId());
 
         assertNotNull(result);
         assertEquals(teacher.getId(), result.getId());
-        assertEquals(teacher.getFirstName(), result.getFirstName());
+        assertEquals(teacher.getName(), result.getName());
         assertEquals(teacher.getSurname(), result.getLastName());
     }
 
@@ -100,7 +100,7 @@ class TeacherServiceTest {
         createTestTeacher();
         createTestTeacher();
 
-        List<TeacherResponseDto> result = teacherService.findAll();
+        List<TeacherResponseDto> result = teacherService.findAllTeacher();
 
         assertEquals(2, result.size());
     }
@@ -110,13 +110,13 @@ class TeacherServiceTest {
         Teacher teacher = createTestTeacher();
 
         TeacherRequestDto updateRequest = new TeacherRequestDto();
-        updateRequest.setFirstName("Updated");
+        updateRequest.setName("Updated");
         updateRequest.setLastName("Name");
         updateRequest.setPatronymic("Patronymic");
 
-        TeacherResponseDto result = teacherService.update(teacher.getId(), updateRequest);
+        TeacherResponseDto result = teacherService.updateTeacher(teacher.getId(), updateRequest);
 
-        assertEquals("Updated", result.getFirstName());
+        assertEquals("Updated", result.getName());
         assertEquals("Name", result.getLastName());
         assertEquals("Patronymic", result.getPatronymic());
     }
@@ -125,7 +125,7 @@ class TeacherServiceTest {
     void delete_ShouldRemoveTeacher() {
         Teacher teacher = createTestTeacher();
 
-        teacherService.delete(teacher.getId());
+        teacherService.deleteTeacher(teacher.getId());
 
         assertFalse(teacherRepository.existsById(teacher.getId()));
     }
@@ -134,41 +134,41 @@ class TeacherServiceTest {
     void findById_ShouldThrowExceptionWhenTeacherNotFound() {
         Long nonExistentId = 999L;
 
-        assertThrows(RuntimeException.class, () -> teacherService.findById(nonExistentId));
+        assertThrows(RuntimeException.class, () -> teacherService.findByIdTeacher(nonExistentId));
     }
 
     @Test
     void update_ShouldThrowExceptionWhenTeacherNotFound() {
         Long nonExistentId = 999L;
         TeacherRequestDto updateRequest = new TeacherRequestDto();
-        updateRequest.setFirstName("Nonexistent");
+        updateRequest.setName("Nonexistent");
 
-        assertThrows(RuntimeException.class, () -> teacherService.update(nonExistentId, updateRequest));
+        assertThrows(RuntimeException.class, () -> teacherService.updateTeacher(nonExistentId, updateRequest));
     }
 
     @Test
     void delete_ShouldNotThrowExceptionWhenTeacherNotFound() {
         Long nonExistentId = 999L;
 
-        assertDoesNotThrow(() -> teacherService.delete(nonExistentId));
+        assertDoesNotThrow(() -> teacherService.deleteTeacher(nonExistentId));
     }
 
     @Test
     void create_ShouldThrowExceptionWhenFirstNameIsBlank() {
         TeacherRequestDto request = new TeacherRequestDto();
-        request.setFirstName(null);
+        request.setName(null);
         request.setLastName("Doe");
 
-        assertThrows(Exception.class, () -> teacherService.create(request));
+        assertThrows(Exception.class, () -> teacherService.createTeacher(request));
     }
 
     @Test
     void create_ShouldThrowExceptionWhenLastNameIsBlank() {
         TeacherRequestDto request = new TeacherRequestDto();
-        request.setFirstName("John");
+        request.setName("John");
         request.setLastName(null);
 
-        assertThrows(Exception.class, () -> teacherService.create(request));
+        assertThrows(Exception.class, () -> teacherService.createTeacher(request));
     }
 
     @Test
@@ -178,11 +178,11 @@ class TeacherServiceTest {
         String originalPatronymic = teacher.getPatronymic();
 
         TeacherRequestDto updateRequest = new TeacherRequestDto();
-        updateRequest.setFirstName("UpdatedOnly");
+        updateRequest.setName("UpdatedOnly");
 
-        TeacherResponseDto result = teacherService.update(teacher.getId(), updateRequest);
+        TeacherResponseDto result = teacherService.updateTeacher(teacher.getId(), updateRequest);
 
-        assertEquals("UpdatedOnly", result.getFirstName());
+        assertEquals("UpdatedOnly", result.getName());
         assertEquals(originalLastName, result.getLastName());
         assertEquals(originalPatronymic, result.getPatronymic());
     }
@@ -221,7 +221,7 @@ class TeacherServiceTest {
 
     private Teacher createTestTeacher() {
         Teacher teacher = new Teacher();
-        teacher.setFirstName("Teacher_" + counter.getAndIncrement());
+        teacher.setName("Teacher_" + counter.getAndIncrement());
         teacher.setSurname("Lastname_" + counter.getAndIncrement());
         teacher.setPatronymic("Midname_" + counter.getAndIncrement());
         return teacherRepository.save(teacher);

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StudentRequestDto {
-    private String firstName;
+    private String name;
     private String surname;
     private String patronymic;
     private Long schoolClassId;

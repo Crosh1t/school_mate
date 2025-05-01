@@ -43,7 +43,7 @@ class SubjectControllerTest {
     void create_ShouldReturnCreatedSubject() throws Exception {
         SubjectResponseDto responseDto = new SubjectResponseDto(1L, "Mathematics");
 
-        when(subjectService.create(any(SubjectRequestDto.class))).thenReturn(responseDto);
+        when(subjectService.createSubject(any(SubjectRequestDto.class))).thenReturn(responseDto);
 
         mockMvc.perform(post("/api/subjects")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -58,7 +58,7 @@ class SubjectControllerTest {
     void findById_ShouldReturnSubject() throws Exception {
         SubjectResponseDto responseDto = new SubjectResponseDto(1L, "Physics");
 
-        when(subjectService.findById(1L)).thenReturn(responseDto);
+        when(subjectService.findByIdSubject(1L)).thenReturn(responseDto);
 
         mockMvc.perform(get("/api/subjects/{id}", 1L))
                 .andExpect(status().isOk())
@@ -72,7 +72,7 @@ class SubjectControllerTest {
                 new SubjectResponseDto(2L, "Physics")
         );
 
-        when(subjectService.findAll()).thenReturn(subjects);
+        when(subjectService.findAllSubject()).thenReturn(subjects);
 
         mockMvc.perform(get("/api/subjects"))
                 .andExpect(status().isOk())
@@ -84,7 +84,7 @@ class SubjectControllerTest {
     void update_ShouldReturnUpdatedSubject() throws Exception {
         SubjectResponseDto responseDto = new SubjectResponseDto(1L, "Updated Math");
 
-        when(subjectService.update(eq(1L), any(SubjectRequestDto.class))).thenReturn(responseDto);
+        when(subjectService.updateSubject(eq(1L), any(SubjectRequestDto.class))).thenReturn(responseDto);
 
         mockMvc.perform(put("/api/subjects/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -97,11 +97,11 @@ class SubjectControllerTest {
 
     @Test
     void delete_ShouldReturnNoContent() throws Exception {
-        doNothing().when(subjectService).delete(1L);
+        doNothing().when(subjectService).deleteSubject(1L);
 
         mockMvc.perform(delete("/api/subjects/{id}", 1L))
                 .andExpect(status().isNoContent());
 
-        verify(subjectService, times(1)).delete(1L);
+        verify(subjectService, times(1)).deleteSubject(1L);
     }
 }

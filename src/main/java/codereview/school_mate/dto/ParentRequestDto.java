@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParentRequestDto {
-    private String firstName;
+    private String name;
     private String surname;
     private String patronymic;
     private String contacts;

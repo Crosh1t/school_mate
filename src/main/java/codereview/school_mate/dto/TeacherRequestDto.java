@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class TeacherRequestDto {
     @NotBlank(message = "First name cannot be empty")
-    private String firstName;
+    private String name;
 
     @NotBlank(message = "Last name cannot be empty")
     private String lastName;

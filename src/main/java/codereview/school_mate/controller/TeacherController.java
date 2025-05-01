@@ -34,8 +34,8 @@ public class TeacherController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные")
     })
     @PostMapping
-    public ResponseEntity<TeacherResponseDto> create(@RequestBody TeacherRequestDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.create(dto));
+    public ResponseEntity<TeacherResponseDto> createTeacher(@RequestBody TeacherRequestDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(dto));
     }
 
     @Operation(summary = "Получить учителя по ID", description = "Возвращает данные учителя по его идентификатору")
@@ -44,16 +44,16 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", description = "Учитель не найден")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<TeacherResponseDto> findById(
+    public ResponseEntity<TeacherResponseDto> findByIdTeacher(
             @Parameter(description = "ID учителя", required = true) @PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(teacherService.findById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(teacherService.findByIdTeacher(id));
     }
 
     @Operation(summary = "Получить всех учителей", description = "Возвращает список всех учителей")
     @ApiResponse(responseCode = "200", description = "Список учителей успешно получен")
     @GetMapping
-    public ResponseEntity<List<TeacherResponseDto>> findAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(teacherService.findAll());
+    public ResponseEntity<List<TeacherResponseDto>> findAllTeacher() {
+        return ResponseEntity.status(HttpStatus.OK).body(teacherService.findAllTeacher());
     }
 
     @Operation(summary = "Обновить данные учителя", description = "Обновляет информацию об учителе по его ID")
@@ -62,10 +62,10 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", description = "Учитель не найден")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<TeacherResponseDto> update(
+    public ResponseEntity<TeacherResponseDto> updateTeacher(
             @Parameter(description = "ID учителя", required = true) @PathVariable Long id,
             @RequestBody TeacherRequestDto dto) {
-        return ResponseEntity.status(HttpStatus.OK).body(teacherService.update(id, dto));
+        return ResponseEntity.status(HttpStatus.OK).body(teacherService.updateTeacher(id, dto));
     }
 
     @Operation(summary = "Удалить учителя", description = "Удаляет запись об учителе по его ID")
@@ -74,9 +74,9 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", description = "Учитель не найден")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<Void> deleteTeacher(
             @Parameter(description = "ID учителя", required = true) @PathVariable Long id) {
-        teacherService.delete(id);
+        teacherService.deleteTeacher(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -86,7 +86,7 @@ public class TeacherController {
             @ApiResponse(responseCode = "404", description = "Учитель или предмет не найден")
     })
     @PostMapping("/{teacherId}/subjects/{subjectId}")
-    public ResponseEntity<TeacherResponseDto> addSubject(
+    public ResponseEntity<TeacherResponseDto> addSubjectTeacher(
             @Parameter(description = "ID учителя", required = true) @PathVariable Long teacherId,
             @Parameter(description = "ID предмета", required = true) @PathVariable Long subjectId) {
         return ResponseEntity.status(HttpStatus.OK).body(teacherService.addSubjectToTeacher(teacherId, subjectId));

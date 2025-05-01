@@ -18,26 +18,26 @@ public class ParentServiceImpl implements ParentService {
     private final ParentMapper parentMapper;
 
     @Override
-    public ParentResponseDto create(ParentRequestDto dto) {
+    public ParentResponseDto createParent(ParentRequestDto dto) {
         Parent parent = parentMapper.toEntity(dto);
         Parent savedParent = parentRepository.save(parent);
         return parentMapper.toDto(savedParent);
     }
 
     @Override
-    public ParentResponseDto findById(Long id) {
+    public ParentResponseDto findByIdParent(Long id) {
         Parent parent = parentRepository.findById(id).orElseThrow(()-> new RuntimeException("Parent not found with id: " + id));
         return parentMapper.toDto(parent);
     }
 
     @Override
-    public List<ParentResponseDto> findAll() {
+    public List<ParentResponseDto> findAllParent() {
         return parentMapper.toDtos(parentRepository.findAll());
     }
 
     @Override
     @Transactional
-    public ParentResponseDto update(Long id, ParentRequestDto dto) {
+    public ParentResponseDto updateParent(Long id, ParentRequestDto dto) {
         Parent parent = parentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Parent not found with id: " + id));
         parentMapper.updateEntityFromDto(dto, parent);
@@ -45,7 +45,7 @@ public class ParentServiceImpl implements ParentService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteParent(Long id) {
         parentRepository.deleteById(id);
     }
 }

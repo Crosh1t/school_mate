@@ -50,12 +50,12 @@ class ParentControllerTest {
 
     @Test
     void findById_ShouldReturnParent() throws Exception {
-        when(parentService.findById(1L)).thenReturn(createParentResponseDto());
+        when(parentService.findByIdParent(1L)).thenReturn(createParentResponseDto());
 
         mockMvc.perform(get("/api/parents/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.firstName").value("Testov"));
+                .andExpect(jsonPath("$.name").value("Testov"));
     }
 
 //    @Test
@@ -75,18 +75,18 @@ class ParentControllerTest {
                 createParentResponseDto()
         );
 
-        when(parentService.findAll()).thenReturn(parents);
+        when(parentService.findAllParent()).thenReturn(parents);
 
         mockMvc.perform(get("/api/parents"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[1].firstName").value("Testov"));
+                .andExpect(jsonPath("$[1].name").value("Testov"));
     }
 
     @Test
     void create_ShouldReturnCreatedParent() throws Exception {
-        when(parentService.create(any(ParentRequestDto.class))).thenReturn(createParentResponseDto());
+        when(parentService.createParent(any(ParentRequestDto.class))).thenReturn(createParentResponseDto());
 
         mockMvc.perform(post("/api/parents")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +97,7 @@ class ParentControllerTest {
 
     @Test
     void update_ShouldReturnUpdatedParent() throws Exception {
-        when(parentService.update(eq(1L), any(ParentRequestDto.class))).thenReturn(createParentResponseDto());
+        when(parentService.updateParent(eq(1L), any(ParentRequestDto.class))).thenReturn(createParentResponseDto());
 
         mockMvc.perform(put("/api/parents/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -108,18 +108,18 @@ class ParentControllerTest {
 
     @Test
     void delete_ShouldReturnNoContent() throws Exception {
-        doNothing().when(parentService).delete(1L);
+        doNothing().when(parentService).deleteParent(1L);
 
         mockMvc.perform(delete("/api/parents/{id}", 1L))
                 .andExpect(status().isNoContent());
 
-        verify(parentService, times(1)).delete(1L);
+        verify(parentService, times(1)).deleteParent(1L);
     }
 
     private ParentRequestDto createParentRequestDto() {
         ParentRequestDto parentRequestDto = new ParentRequestDto();
         parentRequestDto.setPatronymic("Testovich");
-        parentRequestDto.setFirstName("Testov");
+        parentRequestDto.setName("Testov");
         parentRequestDto.setSurname("Test");
         return parentRequestDto;
     }
@@ -128,7 +128,7 @@ class ParentControllerTest {
         ParentResponseDto parentResponseDto = new ParentResponseDto();
         parentResponseDto.setId(1L);
         parentResponseDto.setPatronymic("Testov");
-        parentResponseDto.setFirstName("Testov");
+        parentResponseDto.setName("Testov");
         parentResponseDto.setSurname("Test");
         return parentResponseDto;
     }

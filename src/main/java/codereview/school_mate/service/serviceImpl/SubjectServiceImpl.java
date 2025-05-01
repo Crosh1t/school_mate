@@ -19,27 +19,27 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     @Transactional
-    public SubjectResponseDto create(SubjectRequestDto dto) {
+    public SubjectResponseDto createSubject(SubjectRequestDto dto) {
         Subject subject = subjectMapper.toEntity(dto);
         Subject savedSubject = subjectRepository.save(subject);
         return subjectMapper.toDto(savedSubject);
     }
 
     @Override
-    public SubjectResponseDto findById(Long id) {
+    public SubjectResponseDto findByIdSubject(Long id) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Subject not found"));
         return subjectMapper.toDto(subject);
     }
 
     @Override
-    public List<SubjectResponseDto> findAll() {
+    public List<SubjectResponseDto> findAllSubject() {
         return subjectMapper.subjectsToSubjectResponseDtos(subjectRepository.findAll());
     }
 
     @Override
     @Transactional
-    public SubjectResponseDto update(Long id, SubjectRequestDto dto) {
+    public SubjectResponseDto updateSubject(Long id, SubjectRequestDto dto) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Subject not found"));
         subjectMapper.updateEntityFromDto(dto, subject);
@@ -48,7 +48,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void deleteSubject(Long id) {
         subjectRepository.deleteById(id);
     }
 }

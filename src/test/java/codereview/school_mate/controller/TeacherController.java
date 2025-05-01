@@ -43,23 +43,23 @@ class TeacherControllerTest {
     @Test
     void create_ShouldReturnCreatedTeacher() throws Exception {
         TeacherRequestDto requestDto = new TeacherRequestDto();
-        requestDto.setFirstName("John");
+        requestDto.setName("John");
         requestDto.setLastName("Doe");
         requestDto.setPatronymic("Smith");
 
         TeacherResponseDto responseDto = new TeacherResponseDto();
         responseDto.setId(1L);
-        responseDto.setFirstName("John");
+        responseDto.setName("John");
         responseDto.setLastName("Doe");
         responseDto.setPatronymic("Smith");
 
-        when(teacherService.create(any(TeacherRequestDto.class))).thenReturn(responseDto);
+        when(teacherService.createTeacher(any(TeacherRequestDto.class))).thenReturn(responseDto);
 
         mockMvc.perform(post("/api/teachers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.firstName").value("John"))
+                .andExpect(jsonPath("$.name").value("John"))
                 .andExpect(jsonPath("$.lastName").value("Doe"));
     }
 
@@ -67,38 +67,38 @@ class TeacherControllerTest {
     void findById_ShouldReturnTeacher() throws Exception {
         TeacherResponseDto responseDto = new TeacherResponseDto();
         responseDto.setId(1L);
-        responseDto.setFirstName("Dmitri");
+        responseDto.setName("Dmitri");
         responseDto.setLastName("Smirnov");
         responseDto.setPatronymic("Olegovich");
 
-        when(teacherService.findById(1L)).thenReturn(responseDto);
+        when(teacherService.findByIdTeacher(1L)).thenReturn(responseDto);
 
         mockMvc.perform(get("/api/teachers/{id}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value("Dmitri"))
+                .andExpect(jsonPath("$.name").value("Dmitri"))
                 .andExpect(jsonPath("$.lastName").value("Smirnov"));
     }
 
     @Test
     void update_ShouldReturnUpdatedTeacher() throws Exception {
         TeacherRequestDto requestDto = new TeacherRequestDto();
-        requestDto.setFirstName("Updated");
+        requestDto.setName("Updated");
         requestDto.setLastName("Teacher");
         requestDto.setPatronymic("Patronymic");
 
         TeacherResponseDto responseDto = new TeacherResponseDto();
         responseDto.setId(1L);
-        responseDto.setFirstName("Updated");
+        responseDto.setName("Updated");
         responseDto.setLastName("Teacher");
         responseDto.setPatronymic("Patronymic");
 
-        when(teacherService.update(eq(1L), any(TeacherRequestDto.class))).thenReturn(responseDto);
+        when(teacherService.updateTeacher(eq(1L), any(TeacherRequestDto.class))).thenReturn(responseDto);
 
         mockMvc.perform(put("/api/teachers/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value("Updated"));
+                .andExpect(jsonPath("$.name").value("Updated"));
     }
 
     @Test
@@ -109,7 +109,7 @@ class TeacherControllerTest {
 
         TeacherResponseDto responseDto = new TeacherResponseDto();
         responseDto.setId(1L);
-        responseDto.setFirstName("Ivan");
+        responseDto.setName("Ivan");
         responseDto.setLastName("Ivanov");
         responseDto.setSubjects(Set.of(subjectDto));
 

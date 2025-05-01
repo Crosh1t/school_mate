@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,26 +23,26 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     @Transactional
-    public TeacherResponseDto create(TeacherRequestDto dto) {
+    public TeacherResponseDto createTeacher(TeacherRequestDto dto) {
         Teacher teacher = teacherMapper.toEntity(dto);
         return teacherMapper.toDto(teacherRepository.save(teacher));
     }
 
     @Override
-    public TeacherResponseDto findById(Long id) {
+    public TeacherResponseDto findByIdTeacher(Long id) {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));//коментарий полнее с данными по id
         return teacherMapper.toDto(teacher);
     }
 
     @Override
-    public List<TeacherResponseDto> findAll() {
+    public List<TeacherResponseDto> findAllTeacher() {
         return teacherMapper.teachersToTeacherResponseDtos(teacherRepository.findAll());
     }
 
     @Override
     @Transactional
-    public TeacherResponseDto update(Long id, TeacherRequestDto dto) {
+    public TeacherResponseDto updateTeacher(Long id, TeacherRequestDto dto) {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
         teacherMapper.updateEntityFromDto(dto, teacher);
@@ -52,7 +51,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void deleteTeacher(Long id) {
         teacherRepository.deleteById(id);
     }
 

@@ -5,10 +5,10 @@ import codereview.school_mate.dto.TeacherResponseDto;
 import java.util.List;
 
 public interface TeacherService {
-    TeacherResponseDto create(TeacherRequestDto dto);
-    TeacherResponseDto findById(Long id);
-    List<TeacherResponseDto> findAll();
-    TeacherResponseDto update(Long id, TeacherRequestDto dto);
-    void delete(Long id);
+    TeacherResponseDto createTeacher(TeacherRequestDto dto);
+    TeacherResponseDto findByIdTeacher(Long id);
+    List<TeacherResponseDto> findAllTeacher();
+    TeacherResponseDto updateTeacher(Long id, TeacherRequestDto dto);
+    void deleteTeacher(Long id);
     TeacherResponseDto addSubjectToTeacher(Long teacherId, Long subjectId);
 }

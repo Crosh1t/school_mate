@@ -34,8 +34,8 @@ public class StudentController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные")
     })
     @PostMapping
-    public ResponseEntity<StudentResponseDto> create(@RequestBody StudentRequestDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.create(dto));
+    public ResponseEntity<StudentResponseDto> createStudent(@RequestBody StudentRequestDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(dto));
     }
 
     @Operation(summary = "Получить ученика по ID", description = "Возвращает данные ученика по его идентификатору")
@@ -44,16 +44,16 @@ public class StudentController {
             @ApiResponse(responseCode = "404", description = "Ученик не найден")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<StudentResponseDto> findById(
+    public ResponseEntity<StudentResponseDto> findByIdStudent(
             @Parameter(description = "ID ученика", required = true) @PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(studentService.findById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.findByIdStudent(id));
     }
 
     @Operation(summary = "Получить всех учеников", description = "Возвращает список всех учеников")
     @ApiResponse(responseCode = "200", description = "Список учеников успешно получен")
     @GetMapping
-    public ResponseEntity<List<StudentResponseDto>> findAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(studentService.findAll());
+    public ResponseEntity<List<StudentResponseDto>> findAllStudent() {
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.findAllStudent());
     }
 
     @Operation(summary = "Обновить данные ученика", description = "Обновляет информацию об ученике по его ID")
@@ -62,10 +62,10 @@ public class StudentController {
             @ApiResponse(responseCode = "404", description = "Ученик не найден")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<StudentResponseDto> update(
+    public ResponseEntity<StudentResponseDto> updateStudent(
             @Parameter(description = "ID ученика", required = true) @PathVariable Long id,
             @RequestBody StudentRequestDto dto) {
-        return ResponseEntity.status(HttpStatus.OK).body(studentService.update(id, dto));
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(id, dto));
     }
 
     @Operation(summary = "Удалить ученика", description = "Удаляет запись об ученике по его ID")
@@ -74,9 +74,9 @@ public class StudentController {
             @ApiResponse(responseCode = "404", description = "Ученик не найден")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<Void> deleteStudent(
             @Parameter(description = "ID ученика", required = true) @PathVariable Long id) {
-        studentService.delete(id);
+        studentService.deleteStudent(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

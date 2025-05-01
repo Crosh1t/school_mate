@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StudentResponseDto {
     private Long id;
-    private String firstName;
+    private String name;
     private String surname;
     private String patronymic;
     private SchoolClass schoolClass;

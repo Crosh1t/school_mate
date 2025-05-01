@@ -69,19 +69,19 @@ class StudentServiceImplTest {
         SchoolClass schoolClass = schoolClassRepository.save(createValidSchoolClass());
 
         StudentRequestDto request = new StudentRequestDto();
-        request.setFirstName("Alice");
+        request.setName("Alice");
         request.setSurname("Johnson");
         request.setPatronymic("Marie");
         request.setParentId(parent.getId());
         request.setSchoolClassId(schoolClass.getId());
 
-        StudentResponseDto result = studentService.create(request);
+        StudentResponseDto result = studentService.createStudent(request);
 
         assertNotNull(result.getId());
         assertEquals(1, studentRepository.count());
 
         Student saved = studentRepository.findById(result.getId()).orElseThrow();
-        assertEquals("Alice", saved.getFirstName());
+        assertEquals("Alice", saved.getName());
         assertEquals(parent.getId(), saved.getParent().getId());
         assertEquals(schoolClass.getId(), saved.getSchoolClass().getId());
     }
@@ -92,10 +92,10 @@ class StudentServiceImplTest {
         SchoolClass schoolClass = schoolClassRepository.save(createValidSchoolClass());
         Student student = studentRepository.save(createValidStudent(parent, schoolClass));
 
-        StudentResponseDto result = studentService.findById(student.getId());
+        StudentResponseDto result = studentService.findByIdStudent(student.getId());
 
         assertEquals(student.getId(), result.getId());
-        assertEquals("Alice", result.getFirstName());
+        assertEquals("Alice", result.getName());
         assertEquals("Johnson", result.getSurname());
         assertEquals("Marie", result.getPatronymic());
     }
@@ -107,16 +107,16 @@ class StudentServiceImplTest {
         Student student = studentRepository.save(createValidStudent(parent, schoolClass));
 
         StudentRequestDto updateRequest = new StudentRequestDto();
-        updateRequest.setFirstName("Updated");
+        updateRequest.setName("Updated");
         updateRequest.setSurname("Name");
         updateRequest.setPatronymic("Patronymic");
         updateRequest.setParentId(parent.getId());
         updateRequest.setSchoolClassId(schoolClass.getId());
 
-        studentService.update(student.getId(), updateRequest);
+        studentService.updateStudent(student.getId(), updateRequest);
 
         Student updated = studentRepository.findById(student.getId()).orElseThrow();
-        assertEquals("Updated", updated.getFirstName());
+        assertEquals("Updated", updated.getName());
         assertEquals("Name", updated.getSurname());
         assertEquals("Patronymic", updated.getPatronymic());
     }
@@ -127,13 +127,13 @@ class StudentServiceImplTest {
         SchoolClass schoolClass = schoolClassRepository.save(createValidSchoolClass());
         Student student = studentRepository.save(createValidStudent(parent, schoolClass));
 
-        studentService.delete(student.getId());
+        studentService.deleteStudent(student.getId());
 
         assertFalse(studentRepository.existsById(student.getId()));
     }
     private Parent createValidParent() {
         Parent parent = new Parent();
-        parent.setFirstName("John");
+        parent.setName("John");
         parent.setSurname("Doe");
         parent.setPatronymic("Smith");
         parent.setContacts("john@example.com");
@@ -148,7 +148,7 @@ class StudentServiceImplTest {
 
     private Student createValidStudent(Parent parent, SchoolClass schoolClass) {
         Student student = new Student();
-        student.setFirstName("Alice");
+        student.setName("Alice");
         student.setSurname("Johnson");
         student.setPatronymic("Marie");
         student.setParent(parent);

@@ -26,7 +26,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public StudentResponseDto create(StudentRequestDto dto) {
+    public StudentResponseDto createStudent(StudentRequestDto dto) {
         Parent parent = parentRepository.findById(dto.getParentId())
                 .orElseThrow(() -> new RuntimeException("Parent not found with id: " + dto.getParentId()));
 
@@ -42,20 +42,20 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponseDto findById(Long id) {
+    public StudentResponseDto findByIdStudent(Long id) {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
         return studentMapper.studentToStudentResponseDto(student);
     }
 
     @Override
-    public List<StudentResponseDto> findAll() {
+    public List<StudentResponseDto> findAllStudent() {
         return studentMapper.studentsToStudentResponseDtos(studentRepository.findAll());
     }
 
     @Override
     @Transactional
-    public StudentResponseDto update(Long id, StudentRequestDto dto) {
+    public StudentResponseDto updateStudent(Long id, StudentRequestDto dto) {
         Student existingStudent = studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
@@ -77,7 +77,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteStudent(Long id) {
         studentRepository.deleteById(id);
     }
 }

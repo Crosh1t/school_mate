@@ -5,9 +5,9 @@ import codereview.school_mate.dto.StudentResponseDto;
 import java.util.List;
 
 public interface StudentService {
-        StudentResponseDto create(StudentRequestDto dto);
-        StudentResponseDto findById(Long id);
-        List<StudentResponseDto> findAll();
-        StudentResponseDto update(Long id, StudentRequestDto dto);
-        void delete(Long id);
+        StudentResponseDto createStudent(StudentRequestDto dto);
+        StudentResponseDto findByIdStudent(Long id);
+        List<StudentResponseDto> findAllStudent();
+        StudentResponseDto updateStudent(Long id, StudentRequestDto dto);
+        void deleteStudent(Long id);
     }

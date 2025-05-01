@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class TeacherResponseDto {
     private Long id;
-    private String firstName;
+    private String name;
     private String lastName;
     private String patronymic;
     private Set<SubjectResponseDto> subjects;

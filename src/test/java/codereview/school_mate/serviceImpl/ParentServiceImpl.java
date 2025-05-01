@@ -59,10 +59,10 @@ class ParentServiceTest {
     void create_ValidRequest_ReturnsParentResponseDto() {
         ParentRequestDto request = createValidParentRequest();
 
-        ParentResponseDto result = parentService.create(request);
+        ParentResponseDto result = parentService.createParent(request);
 
         assertNotNull(result.getId());
-        assertEquals("John", result.getFirstName());
+        assertEquals("John", result.getName());
         assertEquals(1, parentRepository.count());
     }
 
@@ -72,7 +72,7 @@ class ParentServiceTest {
         request.setContacts(null);
 
         assertThrows(DataIntegrityViolationException.class, () -> {
-            parentService.create(request);
+            parentService.createParent(request);
         });
     }
 
@@ -80,26 +80,26 @@ class ParentServiceTest {
     @Transactional
     void findById_ExistingId_ReturnsParent() {
         Parent parent = new Parent();
-        parent.setFirstName("Test");
+        parent.setName("Test");
         parent.setSurname("Parent");
         parent.setPatronymic("Testovich");
         parent.setContacts("test@test.com");
         parent = parentRepository.save(parent);
 
-        ParentResponseDto result = parentService.findById(parent.getId());
+        ParentResponseDto result = parentService.findByIdParent(parent.getId());
 
         assertEquals(parent.getId(), result.getId());
-        assertEquals("Test", result.getFirstName());
+        assertEquals("Test", result.getName());
     }
 
     @Test
     void findById_NonExistingId_ThrowsException() {
-        assertThrows(RuntimeException.class, () -> parentService.findById(999L));
+        assertThrows(RuntimeException.class, () -> parentService.findByIdParent(999L));
     }
 
     private ParentRequestDto createValidParentRequest() {
         ParentRequestDto request = new ParentRequestDto();
-        request.setFirstName("John");
+        request.setName("John");
         request.setSurname("Doe");
         request.setPatronymic("Smith");
         request.setContacts("john@example.com");

@@ -52,7 +52,7 @@ class StudentControllerTest {
                 new SchoolClass(), new Parent()
         );
 
-        when(studentService.create(any(StudentRequestDto.class))).thenReturn(responseDto);
+        when(studentService.createStudent(any(StudentRequestDto.class))).thenReturn(responseDto);
 
         mockMvc.perform(post("/api/students")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -60,7 +60,7 @@ class StudentControllerTest {
                                 new StudentRequestDto("Ivan", "Ivanov", "Ivanovich", 1L, 1L)
                         )))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.firstName").value("Ivan"));
+                .andExpect(jsonPath("$.name").value("Ivan"));
     }
 
     @Test
@@ -70,7 +70,7 @@ class StudentControllerTest {
                 new SchoolClass(), new Parent()
         );
 
-        when(studentService.findById(1L)).thenReturn(responseDto);
+        when(studentService.findByIdStudent(1L)).thenReturn(responseDto);
 
         mockMvc.perform(get("/api/students/{id}", 1L))
                 .andExpect(status().isOk())
@@ -84,7 +84,7 @@ class StudentControllerTest {
                 new StudentResponseDto(2L, "Maria", "Petrova", "Sergeevna", null, null)
         );
 
-        when(studentService.findAll()).thenReturn(students);
+        when(studentService.findAllStudent()).thenReturn(students);
 
         mockMvc.perform(get("/api/students"))
                 .andExpect(status().isOk())
@@ -98,7 +98,7 @@ class StudentControllerTest {
                 1L, "Updated", "Name", "Patronymic", null, null
         );
 
-        when(studentService.update(eq(1L), any(StudentRequestDto.class))).thenReturn(responseDto);
+        when(studentService.updateStudent(eq(1L), any(StudentRequestDto.class))).thenReturn(responseDto);
 
         mockMvc.perform(put("/api/students/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,16 +106,16 @@ class StudentControllerTest {
                                 new StudentRequestDto("New", "Name", "Patronymic", 1L, 1L)
                         )))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value("Updated"));
+                .andExpect(jsonPath("$.name").value("Updated"));
     }
 
     @Test
     void delete_ShouldReturnNoContent() throws Exception {
-        doNothing().when(studentService).delete(1L);
+        doNothing().when(studentService).deleteStudent(1L);
 
         mockMvc.perform(delete("/api/students/{id}", 1L))
                 .andExpect(status().isNoContent());
 
-        verify(studentService, times(1)).delete(1L);
+        verify(studentService, times(1)).deleteStudent(1L);
     }
 }

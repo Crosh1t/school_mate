@@ -77,16 +77,16 @@ class StudentServiceTest {
         SchoolClass schoolClass = createTestClass();
 
         StudentRequestDto request = new StudentRequestDto();
-        request.setFirstName("New");
+        request.setName("New");
         request.setSurname("Student");
         request.setPatronymic("TestMiddleName");
         request.setParentId(parent.getId());
         request.setSchoolClassId(schoolClass.getId());
 
-        StudentResponseDto result = studentService.create(request);
+        StudentResponseDto result = studentService.createStudent(request);
 
         assertNotNull(result.getId());
-        assertEquals("New", result.getFirstName());
+        assertEquals("New", result.getName());
         assertEquals("Student", result.getSurname());
         assertEquals("TestMiddleName", result.getPatronymic());
         assertEquals(parent.getId(), result.getParent().getId());
@@ -97,11 +97,11 @@ class StudentServiceTest {
     void findById_ShouldReturnExistingStudent() {
         Student student = createTestStudent();
 
-        StudentResponseDto result = studentService.findById(student.getId());
+        StudentResponseDto result = studentService.findByIdStudent(student.getId());
 
         assertNotNull(result);
         assertEquals(student.getId(), result.getId());
-        assertEquals(student.getFirstName(), result.getFirstName());
+        assertEquals(student.getName(), result.getName());
         assertEquals(student.getSurname(), result.getSurname());
     }
 
@@ -110,7 +110,7 @@ class StudentServiceTest {
         createTestStudent();
         createTestStudent();
 
-        List<StudentResponseDto> result = studentService.findAll();
+        List<StudentResponseDto> result = studentService.findAllStudent();
 
         assertEquals(2, result.size());
     }
@@ -122,15 +122,15 @@ class StudentServiceTest {
         SchoolClass newClass = createTestClass();
 
         StudentRequestDto updateRequest = new StudentRequestDto();
-        updateRequest.setFirstName("Updated");
+        updateRequest.setName("Updated");
         updateRequest.setSurname("Student");
         updateRequest.setPatronymic("TestMiddleName");
         updateRequest.setParentId(newParent.getId());
         updateRequest.setSchoolClassId(newClass.getId());
 
-        StudentResponseDto result = studentService.update(student.getId(), updateRequest);
+        StudentResponseDto result = studentService.updateStudent(student.getId(), updateRequest);
 
-        assertEquals("Updated", result.getFirstName());
+        assertEquals("Updated", result.getName());
         assertEquals("Student", result.getSurname());
         assertEquals(newParent.getId(), result.getParent().getId());
         assertEquals(newClass.getId(), result.getSchoolClass().getId());
@@ -140,7 +140,7 @@ class StudentServiceTest {
     void delete_ShouldRemoveStudent() {
         Student student = createTestStudent();
 
-        studentService.delete(student.getId());
+        studentService.deleteStudent(student.getId());
 
         assertFalse(studentRepository.existsById(student.getId()));
     }
@@ -151,13 +151,13 @@ class StudentServiceTest {
         Long nonExistentParentId = 999L;
 
         StudentRequestDto request = new StudentRequestDto();
-        request.setFirstName("New");
+        request.setName("New");
         request.setSurname("Student");
         request.setPatronymic("TestMiddleName");
         request.setParentId(nonExistentParentId);
         request.setSchoolClassId(schoolClass.getId());
 
-        assertThrows(RuntimeException.class, () -> studentService.create(request));
+        assertThrows(RuntimeException.class, () -> studentService.createStudent(request));
     }
 
     @Test
@@ -166,29 +166,29 @@ class StudentServiceTest {
         Long nonExistentClassId = 999L;
 
         StudentRequestDto request = new StudentRequestDto();
-        request.setFirstName("New");
+        request.setName("New");
         request.setSurname("Student");
         request.setPatronymic("TestMiddleName");
         request.setParentId(parent.getId());
         request.setSchoolClassId(nonExistentClassId);
 
-        assertThrows(RuntimeException.class, () -> studentService.create(request));
+        assertThrows(RuntimeException.class, () -> studentService.createStudent(request));
     }
 
     @Test
     void findById_ShouldThrowExceptionWhenStudentNotFound() {
         Long nonExistentId = 999L;
 
-        assertThrows(RuntimeException.class, () -> studentService.findById(nonExistentId));
+        assertThrows(RuntimeException.class, () -> studentService.findByIdStudent(nonExistentId));
     }
 
     @Test
     void update_ShouldThrowExceptionWhenStudentNotFound() {
         Long nonExistentId = 999L;
         StudentRequestDto updateRequest = new StudentRequestDto();
-        updateRequest.setFirstName("Nonexistent");
+        updateRequest.setName("Nonexistent");
 
-        assertThrows(RuntimeException.class, () -> studentService.update(nonExistentId, updateRequest));
+        assertThrows(RuntimeException.class, () -> studentService.updateStudent(nonExistentId, updateRequest));
     }
 
     @Test
@@ -199,7 +199,7 @@ class StudentServiceTest {
         StudentRequestDto updateRequest = new StudentRequestDto();
         updateRequest.setParentId(nonExistentParentId);
 
-        assertThrows(RuntimeException.class, () -> studentService.update(student.getId(), updateRequest));
+        assertThrows(RuntimeException.class, () -> studentService.updateStudent(student.getId(), updateRequest));
     }
 
     @Test
@@ -210,14 +210,14 @@ class StudentServiceTest {
         StudentRequestDto updateRequest = new StudentRequestDto();
         updateRequest.setSchoolClassId(nonExistentClassId);
 
-        assertThrows(RuntimeException.class, () -> studentService.update(student.getId(), updateRequest));
+        assertThrows(RuntimeException.class, () -> studentService.updateStudent(student.getId(), updateRequest));
     }
 
     @Test
     void delete_ShouldNotThrowExceptionWhenStudentNotFound() {
         Long nonExistentId = 999L;
 
-        assertDoesNotThrow(() -> studentService.delete(nonExistentId));
+        assertDoesNotThrow(() -> studentService.deleteStudent(nonExistentId));
     }
 
     @Test
@@ -226,13 +226,13 @@ class StudentServiceTest {
         SchoolClass schoolClass = createTestClass();
 
         StudentRequestDto request = new StudentRequestDto();
-        request.setFirstName("");
+        request.setName("");
         request.setSurname("  ");
         request.setPatronymic(null);
         request.setParentId(parent.getId());
         request.setSchoolClassId(schoolClass.getId());
 
-        assertThrows(DataIntegrityViolationException.class, () -> studentService.create(request));
+        assertThrows(DataIntegrityViolationException.class, () -> studentService.createStudent(request));
     }
 
     @Test
@@ -244,11 +244,11 @@ class StudentServiceTest {
         Long originalClassId = student.getSchoolClass().getId();
 
         StudentRequestDto updateRequest = new StudentRequestDto();
-        updateRequest.setFirstName("UpdatedFirstname");
+        updateRequest.setName("UpdatedFirstname");
 
-        StudentResponseDto result = studentService.update(student.getId(), updateRequest);
+        StudentResponseDto result = studentService.updateStudent(student.getId(), updateRequest);
 
-        assertEquals("UpdatedFirstname", result.getFirstName());
+        assertEquals("UpdatedFirstname", result.getName());
         assertEquals(originalSurname, result.getSurname());
         assertEquals(originalPatronymic, result.getPatronymic());
         assertEquals(originalParentId, result.getParent().getId());
@@ -260,7 +260,7 @@ class StudentServiceTest {
     private Parent createTestParent() {
         long id = counter.getAndIncrement();
         Parent parent = new Parent();
-        parent.setFirstName("Parent_" + id);
+        parent.setName("Parent_" + id);
         parent.setSurname("LastName_" + id);
         parent.setPatronymic("MiddleName_" + id);
         parent.setContacts("parent_" + id + "@test.com");
@@ -279,7 +279,7 @@ class StudentServiceTest {
         SchoolClass schoolClass = createTestClass();
 
         Student student = new Student();
-        student.setFirstName("Student_" + counter.getAndIncrement());
+        student.setName("Student_" + counter.getAndIncrement());
         student.setSurname("LastName_" + counter.getAndIncrement());
         student.setPatronymic("MiddleName_" + counter.getAndIncrement());
         student.setParent(parent);
