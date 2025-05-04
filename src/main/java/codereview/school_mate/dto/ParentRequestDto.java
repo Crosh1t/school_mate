@@ -26,6 +26,4 @@ public class ParentRequestDto {
     @Pattern(regexp = "^\\+?[0-9\\s-]{10,}$", message = "Некорректный формат телефона")
     private String contacts;
 
-    @Email(message = "Некорректный формат email")
-    private String email;
 }

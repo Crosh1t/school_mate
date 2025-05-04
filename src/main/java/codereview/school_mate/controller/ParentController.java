@@ -64,7 +64,7 @@ public class ParentController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<ParentResponseDto> updateParent(
-            @Parameter(description = "ID родителя", required = true) @PathVariable Long id,
+            @Parameter(description = "ID родителя", required = true)@Valid @PathVariable Long id,
             @RequestBody ParentRequestDto dto) {
         return ResponseEntity.status(HttpStatus.OK).body(parentService.updateParent(id, dto));
     }
