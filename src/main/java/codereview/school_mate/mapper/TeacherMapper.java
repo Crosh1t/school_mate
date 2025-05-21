@@ -1,7 +1,8 @@
 package codereview.school_mate.mapper;
 
-import codereview.school_mate.dto.TeacherRequestDto;
-import codereview.school_mate.dto.TeacherResponseDto;
+import codereview.school_mate.dto.request.registration.TeacherRegistrationRequestDto;
+import codereview.school_mate.dto.request.TeacherRequestDto;
+import codereview.school_mate.dto.responce.TeacherResponseDto;
 import codereview.school_mate.model.Teacher;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.BeanMapping;
@@ -31,4 +32,6 @@ public interface TeacherMapper {
     @Mapping(target = "classes", ignore = true)
     @Mapping(target = "surname", source = "lastName")
     void updateEntityFromDto(TeacherRequestDto dto, @MappingTarget Teacher entity);
+
+    Teacher registrationDtoToTeacher(TeacherRegistrationRequestDto teacherRegistrationRequestDto);
 }
