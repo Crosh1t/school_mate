@@ -5,12 +5,11 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
   liquibase:
-    change-log: classpath:/db/changelog/db.changelog-master.xml
-    enabled: true
-#  jpa:
-#    hibernate:
-#      ddl-auto: create-drop
-#    show-sql: true
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
 #  autoconfigure:
 #    exclude:
 #      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
