@@ -1,7 +1,0 @@
-CREATE TABLE users (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    roles_id BIGINT,
-    CONSTRAINT fk_users_role FOREIGN KEY (roles_id) REFERENCES roles(id)
-);
