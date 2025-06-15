@@ -1,17 +1,14 @@
 package codereview.school_mate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
 @Data
-@Table(name = "schedule")
+@Table(name = "schedules")
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,29 +17,38 @@ public class Schedule {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "time", nullable = false)
-    private LocalTime time;
+    @Column(name = "description")
+    private String description;
 
-    @Column(name = "description", nullable = true)
-    private StringBuilder description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "week_day_id", nullable = false)
+    private WeekDay weekDay;
 
-    @Column(name = "day_of_week", nullable = false)
-    private Enum<DayOfWeek> dayOfWeekEnum;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "daily_time_id", nullable = false)
+    private DailyTime dailyTime;
 
-    @OneToMany(mappedBy = "parent", orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Set<Subject> subjects;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id", nullable = false)
-    private Set<SchoolClass> schoolClass;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id", nullable = false)
+    private Subject subject;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id", nullable = false)
+    @JoinTable(
+            name = "schedules_classes",
+            joinColumns = @JoinColumn(name = "schedule_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "class_id", referencedColumnName = "id")
+    )
+    private Set<SchoolClass> schoolClasses;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "teachers_schedules",
+            joinColumns = @JoinColumn(name = "schedule_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "teacher_id", referencedColumnName = "id")
+    )
     private Set<Teacher> teachers;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "classroom_id", nullable = false)
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "classroom_id")
     private Classroom classroom;
 }
