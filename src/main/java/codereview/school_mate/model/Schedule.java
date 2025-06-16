@@ -1,10 +1,24 @@
 package codereview.school_mate.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.FetchType;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
+import codereview.school_mate.enums.DayOfWeekEnum;
 
 @Entity
 @Data
@@ -15,18 +29,20 @@ public class Schedule {
     private Long id;
 
     @Column(name = "date", nullable = false)
-    private LocalDate date;
+    private LocalDateTime date;
 
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "week_day_id", nullable = false)
-    private WeekDay weekDay;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "week_day", nullable = false)
+    private DayOfWeekEnum weekDay;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "daily_time_id", nullable = false)
-    private DailyTime dailyTime;
+    @Column(name = "start_time", nullable = false)
+    private LocalTime startTime;
+
+    @Column(name = "end_time", nullable = false)
+    private LocalTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id", nullable = false)

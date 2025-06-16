@@ -11,15 +11,14 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {SubjectMapper.class, SchoolClassMapper.class, TeacherMapper.class, ClassroomMapper.class, WeekDayMapper.class, DailyTimeMapper.class})
+@Mapper(componentModel = "spring", uses = {SubjectMapper.class, SchoolClassMapper.class, TeacherMapper.class, ClassroomMapper.class})
 public interface ScheduleMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "subject", ignore = true)
     @Mapping(target = "schoolClasses", ignore = true)
     @Mapping(target = "teachers", ignore = true)
     @Mapping(target = "classroom", ignore = true)
-    @Mapping(target = "weekDay", ignore = true)
-    @Mapping(target = "dailyTime", ignore = true)
+    // weekDay, startTime, endTime map directly
     Schedule toEntity(ScheduleRequestDto dto);
 
     ScheduleResponseDto toDto(Schedule entity);
@@ -32,7 +31,6 @@ public interface ScheduleMapper {
     @Mapping(target = "schoolClasses", ignore = true)
     @Mapping(target = "teachers", ignore = true)
     @Mapping(target = "classroom", ignore = true)
-    @Mapping(target = "weekDay", ignore = true)
-    @Mapping(target = "dailyTime", ignore = true)
+    // direct
     void updateEntityFromDto(ScheduleRequestDto dto, @MappingTarget Schedule entity);
 }
